@@ -1,8 +1,28 @@
+import { Suspense } from "react";
+import { createClient } from "@/lib/supabase/server";
+import { Timer } from "@/components/timer/timer";
+
+async function TimerLoader() {
+  const supabase = await createClient();
+  const { data: courses } = await supabase
+    .from("courses")
+    .select("id, name")
+    .eq("archived", false)
+    .order("name");
+
+  return <Timer courses={courses ?? []} />;
+}
+
 export default function HomePage() {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
-        <div className="text-7xl font-mono tabular-nums">00:00:00</div>
-        <p className="text-muted-foreground">Timer goes here</p>
-      </div>
-    );
-  }
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[60vh] items-center justify-center text-muted-foreground">
+          Loading...
+        </div>
+      }
+    >
+      <TimerLoader />
+    </Suspense>
+  );
+}
