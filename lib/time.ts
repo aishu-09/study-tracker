@@ -5,22 +5,31 @@ export type Segment = {
     kind: "study" | "break";
     started_at: string;
     ended_at: string | null;
-  };
+};
   
-  // Sum the time spent in one kind of segment. An open segment counts up to `now`.
-  export function sumSegments(segments: Segment[], kind: Segment["kind"], now: number) {
+// Sum the time spent in one kind of segment. An open segment counts up to `now`.
+export function sumSegments(segments: Segment[], kind: Segment["kind"], now: number) {
     return segments
-      .filter((s) => s.kind === kind)
-      .reduce((total, s) => {
-        const end = s.ended_at ? new Date(s.ended_at).getTime() : now;
-        return total + Math.max(0, end - new Date(s.started_at).getTime());
-      }, 0);
-  }
-  
-  export function formatDuration(ms: number) {
+        .filter((s) => s.kind === kind)
+        .reduce((total, s) => {
+            const end = s.ended_at ? new Date(s.ended_at).getTime() : now;
+            return total + Math.max(0, end - new Date(s.started_at).getTime());
+        }, 0);
+}
+
+export function formatDuration(ms: number) {
     const total = Math.floor(ms / 1000);
     const h = Math.floor(total / 3600);
     const m = Math.floor((total % 3600) / 60);
     const s = total % 60;
     return [h, m, s].map((n) => String(n).padStart(2, "0")).join(":");
-  }
+}
+
+// Short format for lists: "4h 12m", "35m", "<1m"
+export function formatHM(ms: number) {
+    const totalMin = Math.round(ms / 60000);
+    if (ms > 0 && totalMin === 0) return "<1m";
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
