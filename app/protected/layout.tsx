@@ -21,9 +21,6 @@ export default function ProtectedLayout({
           </div>
           <div className="flex items-center gap-3">
             <ThemeSwitcher />
-            <Suspense>
-              <AuthButton />
-            </Suspense>
           </div>
         </div>
       </nav>
